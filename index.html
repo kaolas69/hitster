@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hitster QR Music</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #121212;
+      color: white;
+      margin: 0;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    #video {
+      width: 300px;
+      height: 300px;
+      border: 2px solid #1DB954;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    #status {
+      font-size: 1rem;
+      color: #aaa;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hitster QR Scanner</h1>
+  <video id="video" autoplay muted playsinline></video>
+  <p id="status">Initializing camera...</p>
+
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+  <script>
+    const codeReader = new ZXing.BrowserQRCodeReader();
+    const videoElement = document.getElementById('video');
+    const status = document.getElementById('status');
+
+    codeReader
+      .decodeFromVideoDevice(null, 'video', (result, err) => {
+        if (result) {
+          const url = result.getText();
+          status.textContent = "QR detected! Opening Spotify...";
+          window.location.href = url;
+        } else if (err && !(err instanceof ZXing.NotFoundException)) {
+          console.error(err);
+          status.textContent = "QR read error: " + err;
+        }
+      })
+      .then(() => {
+        status.textContent = "Camera ready. Hold QR code in front.";
+      })
+      .catch((err) => {
+        console.error(err);
+        status.textContent = "Camera error: " + err;
+      });
+  </script>
+</body>
+</html>
